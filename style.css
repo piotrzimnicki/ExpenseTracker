@@ -1,0 +1,246 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 10px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 40px;
+}
+
+h2 {
+    font-size: 2rem;
+}
+h3 {
+    font-size: 1.8rem;
+}
+
+p {
+    font-size: 1.6rem;
+}
+
+h3.inner-title {
+    font-weight: 400;
+    padding: 10px 0;
+    margin-bottom: 20px;
+}
+h3.inner-title::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: #d4d4d4;
+    position: relative;
+    bottom: -5px;
+}
+
+.wrapper {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #888888;
+    box-shadow: 0px 20px 20px #d3d3d3;
+}
+.wrapper h1 {
+    text-align: center;
+}
+
+.month {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+.month select {
+    padding: 1rem 2rem;
+    background: none;
+    border: 1px solid #000;
+    margin-left: 2rem;
+    font-size: 2rem;
+}
+.balance {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+}
+.balance h2 {
+    margin-bottom: 2rem;
+}
+.balance p {
+    padding: 1rem 2rem;
+    font-size: 2rem;
+}
+.balance p.positive {
+    background-color: hsla(120, 95%, 36%, 0.5);
+}
+.balance p.negative {
+    background-color: hsla(0, 100%, 33%, 0.5);
+}
+.main-info {
+    display:flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+.main-info h3 {
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+}
+.main-info .income,
+.main-info .expense {
+    padding: 10px 20px;
+    text-align: center;
+    margin: 0 10px;
+    box-shadow: 0px 0 3px 1px #ccc;
+}
+.main-info .income p,
+.main-info .expense p {
+    padding: 10px 0;
+    font-weight: 600;
+}
+.main-info .income p {
+    color: #05b305;
+}
+.main-info .expense p {
+    color: #a80000;
+}
+.history {
+    transition: .3s height;
+    margin-bottom: 20px;
+}
+
+.history .single {
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #aaa;
+    background-color: #eee;
+    box-shadow: 0px 3px 5px -5px #000;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.history .single::before {
+    content: 'Click to remove';
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(160, 160, 160, 0.5);
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translateY(-100px);
+    transition: .3s transform;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+}
+
+.history .single:hover::before {
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.history .single::after {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 0.5rem;
+    height: 100%;
+    top: 0;
+    right: -1px;
+}
+.history .single.expense {
+    border-right: 1px solid #a80000;
+}
+.history .single.income {
+    border-right: 1px solid #05b305;
+}
+.history .single.expense::after {
+    background-color: #a80000;
+}
+.history .single.income::after {
+    background-color: #05b305;
+}
+.history .single p {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+.history .single p .name {
+    word-wrap: anywhere;
+}
+.history .single p .price {
+    padding: 0 0.5rem;
+}
+.add-transaction label {
+    display: block;
+    padding-bottom: 10px;
+}
+.add-transaction label > p {
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.add-transaction input {
+    width: 100%;
+    padding: 1rem;
+}
+
+.btn-submit {
+    padding: 1em 2em;
+    background-color: rgb(0, 97, 207);
+    color: #fff;
+    border: none;
+    font-size: 2rem;
+    width: 100%;
+}
+.message {
+    display: none;
+    opacity: 0;
+    transition: .3s opacity;
+    justify-content: space-between;
+    background-color: #d700006e;
+}
+.message.active {
+    padding: 0.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+}
+.message.active p {
+    padding:  0.5rem;
+}
+.message.active span {
+    padding: 0.5rem 1.5rem;
+    cursor: pointer;
+    background-color: #b8b8b8;
+    margin: 0 0 0 auto;
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.fade-out {
+    animation: fadeOut 0.3s both;
+}
+.fade-in {
+    animation: fadeIn 0.3s both;
+}
+
+@keyframes fadeOut {
+    from {opacity: 1;}
+    to {opacity: 0;}
+}
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}

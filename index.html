@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="wrapper">
+        <h1>Expense Tracker</h1>
+        <div class="month">
+            <h2>Select month:</h2>
+            <select name="month" id="month-selector">
+            </select>
+        </div>
+        <div class="balance">
+            <h2>Your balance</h2>
+            <p id="balance">$150.00</p>
+        </div>
+        <div class="main-info">
+            <div class="income">
+                <h3>income</h3>
+                <p id="income">$300.00</p>
+            </div>
+            <div class="expense">
+                <h3>expense</h3>
+                <p id="expense">$150.00</p>
+            </div>
+        </div>
+        <div class="history">
+            <h3 class="inner-title">History</h3>
+            <div class="inner">
+            </div>
+        </div>
+        <div class="add-transaction">
+            <h3 class="inner-title">Add new transaction</h3>
+            <div class="message">
+                <p></p>
+                <span>X</span>
+            </div>
+            <label>
+                <p>Transaction title</p>
+                <input type="text" name="transaction" placeholder="Enter transaction name...">
+            </label>
+            <label>
+                <p>Cash amount</p>
+                <input type="number" name="amount" placeholder="Enter amount...">
+            </label>
+            <button class="btn btn-submit" id="submit">Save transaction</button>
+        </div>
+
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
