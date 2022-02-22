@@ -50,20 +50,52 @@ h3.inner-title::after {
 .wrapper h1 {
     text-align: center;
 }
+.utils {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.utils .drop,
+.utils .btn-summary {
+    border: 1px solid #000;
+    background-color: #d30000;
+    color: #fff;
+    padding: 10px 20px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: .3s background-color;
+}
+.utils .drop {
+    background-color: #d30000;
+}
+.utils .btn-summary {
+    background-color: #0061cf;
+}
+.utils .drop:hover {
+    background-color: #a80000;
+}
+.utils .btn-summary:hover {
+    background-color: #014797;
+}
 
-.month {
+.selectors h2 {
+    margin-right: 2rem;
+}
+.selectors select {
+    padding: 1rem 2rem;
+    background: none;
+    border: 1px solid #000;
+    font-size: 2rem;
+}
+.selectors .year,
+.selectors .month {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     margin-bottom: 2rem;
 }
-.month select {
-    padding: 1rem 2rem;
-    background: none;
-    border: 1px solid #000;
-    margin-left: 2rem;
-    font-size: 2rem;
-}
+
 .balance {
     display: flex;
     flex-direction: column;
@@ -243,4 +275,11 @@ h3.inner-title::after {
 @keyframes fadeIn {
     from {opacity: 0;}
     to {opacity: 1;}
+}
+
+@media(max-width:373px) {
+    .month h2 {
+        margin-right: 0;
+        margin-bottom: 2rem;
+    }
 }

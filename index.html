@@ -5,15 +5,27 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Expense Tracker</title>
+    <link rel="shortcut icon"  href="favicon.ico">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="wrapper">
+        <div class="utils">
+            <button id="drop" class="drop">DELETE ALL</button>
+            <button id="btn-summary" class="btn-summary">Summary</button>
+        </div>
         <h1>Expense Tracker</h1>
-        <div class="month">
-            <h2>Select month:</h2>
-            <select name="month" id="month-selector">
-            </select>
+        <div class="selectors">
+            <div class="year">
+                <h2>Select year:</h2>
+                <select name="year" id="year-selector">
+                </select>
+            </div>
+            <div class="month">
+                <h2>Select month:</h2>
+                <select name="month" id="month-selector">
+                </select>
+            </div>
         </div>
         <div class="balance">
             <h2>Your balance</h2>

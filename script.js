@@ -1,57 +1,71 @@
 function expenseTracker (classWrapper) {
-        const wrapper = document.querySelector(`.${classWrapper}`);
-        const historyList = wrapper.querySelector('.history .inner');
-        const balance = wrapper.querySelector('#balance');
-        const incomeInfo = wrapper.querySelector('#income');
-        const expenseInfo = wrapper.querySelector('#expense');
-        const btnSubmit = wrapper.querySelector('#submit');
-        const message = wrapper.querySelector('.message');
-        const monthList = ['January','February','March','April','May','June','July','August','September','November','December'];
-        let selectedMonth = localStorage.getItem('selectedMonth') || '';
-        btnSubmit.addEventListener('click', addTransaction);
-        historyList.addEventListener('click', removeItem);
-        window.addEventListener('keydown', keyboardSupport)
+    const wrapper = document.querySelector(`.${classWrapper}`);
+    const drop = wrapper.querySelector('#drop');
+    const historyList = wrapper.querySelector('.history .inner');
+    const balance = wrapper.querySelector('#balance');
+    const incomeInfo = wrapper.querySelector('#income');
+    const expenseInfo = wrapper.querySelector('#expense');
+    const btnSubmit = wrapper.querySelector('#submit');
+    const message = wrapper.querySelector('.message');
+    const yearList = [2024,2023,2022,2021,2020];
+    const monthList = ['January','February','March','April','May','June','July','August','September','November','December'];
+    let selected = {
+        month: localStorage.getItem('selected') ? (JSON.parse(localStorage.getItem('selected'))).month : null,
+        year: localStorage.getItem('selected') ? (JSON.parse(localStorage.getItem('selected'))).year : null,
+    }
+    let localShort = `expenseTracker${selected.month}${selected.year}`;
+    btnSubmit.addEventListener('click', addTransaction);
+    historyList.addEventListener('click', removeItem);
+    window.addEventListener('keydown', keyboardSupport)
 
+    // https://gist.github.com/gordonbrander/2230317
     function uid()  {
         let a = new Uint32Array(3);
         window.crypto.getRandomValues(a);
         return (performance.now().toString(36)+Array.from(a).map(A => A.toString(36)).join("")).replace(/\./g,"");
     };
-
-
     function monthSelector() {
-        const select = wrapper.querySelector('#month-selector');
-        const lastMonth = localStorage.getItem('selectedMonth');
-        if(!lastMonth) localStorage.setItem('selectedMonth', monthList[0]);
-        selectedMonth = localStorage.getItem('selectedMonth');
-        select.addEventListener('change', (e) => {
-            historyList.closest('.history').classList.add('fade-in');
-            localStorage.setItem('selectedMonth', monthList[e.target.selectedIndex]);
-            selectedMonth = localStorage.getItem('selectedMonth');
-            getTransactions();
-            updateHeight(e);
-            setTimeout(()=> {
-                historyList.closest('.history').classList.remove('fade-in');
-            },300)
-        })
-        monthList.map(el => {
-            let option = `<option ${el==lastMonth?'selected="selected"':""} value="${el}">${el}</option>`;
-            select.insertAdjacentHTML('beforeend', option);
-        });
+        const selectMonth = wrapper.querySelector('#month-selector');
+        const selectYear = wrapper.querySelector('#year-selector');
+        const lastMonth = localStorage.getItem('selected') ? (JSON.parse(localStorage.getItem('selected'))).month: monthList[0];
+        const lastYear = localStorage.getItem('selected') ? (JSON.parse(localStorage.getItem('selected'))).year : yearList[0];
+        selected = {
+            month: lastMonth,
+            year: lastYear
+        }
+        localStorage.setItem('selected', JSON.stringify(selected));
+        function addEvent(selector,array,monthOrYear) {
+            selector.addEventListener('change', (e) => {
+                localShort = `expenseTracker${selected.month}${selected.year}`;
+                selected[`${monthOrYear}`] = array[e.target.selectedIndex];
+                historyList.closest('.history').classList.add('fade-in');
+                localStorage.setItem('selected', JSON.stringify(selected));
+                selected[`${monthOrYear}`] = (JSON.parse(localStorage.getItem('selected')))[`${monthOrYear}`];
+                getTransactions();
+                updateHeight(e);
+                setTimeout(()=> {
+                    historyList.closest('.history').classList.remove('fade-in');
+                },300)
+            });
+        }
+        addEvent(selectMonth,monthList,'month');
+        addEvent(selectYear,yearList,'year');
+        function printOptions(arr,last,wrapper) {
+            arr.map(el => {
+                let option = `<option ${el==last?'selected="selected"':""} value="${el}">${el}</option>`;
+                wrapper.insertAdjacentHTML('beforeend', option);
+            });
+        }
+        printOptions(monthList,lastMonth,selectMonth);
+        printOptions(yearList,lastYear,selectYear);
     }
-
-
     function updateHeight(e) {
         if(e) {
             const arr = Array.from(wrapper.querySelectorAll('.single'));
             const last = arr[arr.length - 1];
             if(last) {
-                if (e.target.id === "submit") {
-                        last.classList.add('fade-in');
-                }
-                setTimeout(()=> {
-                    last.classList.remove('fade-in');
-                },300)
+                if (e.target.id === "submit") {last.classList.add('fade-in');}
+                setTimeout(()=> {last.classList.remove('fade-in');},300)
             }
         }
         wrapper.querySelector('.history').style.height = wrapper.querySelector('.history .inner').scrollHeight + 64 + 'px';
@@ -86,7 +100,8 @@ function expenseTracker (classWrapper) {
         }
     }
     function getTransactions() {
-        const transactions = JSON.parse(localStorage.getItem(`expenseTracker${selectedMonth}`));
+        localShort = `expenseTracker${selected.month}${selected.year}`;
+        const transactions = JSON.parse(localStorage.getItem(localShort));
         if(transactions) {
             historyList.innerText = '';
             transactions.map(el => {
@@ -95,14 +110,13 @@ function expenseTracker (classWrapper) {
                 </div>`
                 historyList.insertAdjacentHTML('beforeend',div);
             });
-            countAll();
+            countMonth();
         } else {
             historyList.innerText = '';
-            countAll();
+            countMonth();
         }
     }
     function addTransaction(e) {
-        if(!selectedMonth) selectedMonth = '';
         const inputs = Array.from(e.target.closest('.add-transaction').querySelectorAll('input'));
         const values = Array.from(inputs).map(el => el.value);
         const validation = validate(values[0],values[1]);
@@ -112,12 +126,12 @@ function expenseTracker (classWrapper) {
             name: values[0],
             price: Number(values[1]).toFixed(2),
         };
-        const localItem = localStorage.getItem(`expenseTracker${selectedMonth}`);
-        if(!localItem) localStorage.setItem(`expenseTracker${selectedMonth}`, JSON.stringify([obj]));
+        const localItem = localStorage.getItem(localShort);
+        if(!localItem) localStorage.setItem(localShort, JSON.stringify([obj]));
         if(localItem) {
             let arr = JSON.parse(localItem);
             arr.push(obj);
-            localStorage.setItem(`expenseTracker${selectedMonth}`, JSON.stringify(arr));
+            localStorage.setItem(localShort, JSON.stringify(arr));
         }
             setTimeout(() => {
                 getTransactions(e);
@@ -131,11 +145,11 @@ function expenseTracker (classWrapper) {
             const target = e.target.closest('.single') || e.target;
             target.classList.add('fade-out');
             setTimeout(() => {
-                let transactions = JSON.parse(localStorage.getItem(`expenseTracker${selectedMonth}`));
+                let transactions = JSON.parse(localStorage.getItem(localShort));
                 transactions = transactions.filter(el =>{
                     return el.id != target.id;
                 })
-                localStorage.setItem(`expenseTracker${selectedMonth}`, JSON.stringify(transactions));
+                localStorage.setItem(localShort, JSON.stringify(transactions));
                 getTransactions(e);
             }, 300);
             setTimeout(() => {
@@ -143,18 +157,20 @@ function expenseTracker (classWrapper) {
             },310)
         }
     }
-    function countAll() {
+    function countMonth() {
             let balanceSum = 0;
             let incomeSum = 0;
             let expenseSum = 0;
-            const transactions = JSON.parse(localStorage.getItem(`expenseTracker${selectedMonth}`));
-            if(transactions) {
+            const transactions = JSON.parse(localStorage.getItem(localShort));
+            if(transactions && transactions.length > 0) {
                 transactions.map(el => {
                     let price = Number(el.price);
                     balanceSum += price
                     if(price < 0) expenseSum += price;
                     if(price > 0) incomeSum += price;
                 });
+            } else {
+                localStorage.removeItem(localShort)
             }
             balance.removeAttribute('class');
             if(balanceSum < 0) balance.classList.add('negative');
@@ -163,12 +179,71 @@ function expenseTracker (classWrapper) {
             incomeInfo.innerText = incomeSum.toFixed(2) + ' zł';
             expenseInfo.innerText = expenseSum.toFixed(2) + ' zł';
     };
+    drop.addEventListener('click',dropList);
+    function dropList() {
+        const confirm = window.confirm('Are u sure to delete ALL data?');
+        if(confirm) {
+            monthList.map(month => {
+                yearList.map(year => {
+                    if(localStorage.getItem(`expenseTracker${month}${year}`))
+                    localStorage.removeItem(`expenseTracker${month}${year}`);
+                })
+            });
+            getTransactions();
+            countMonth();
+            updateHeight();
+        }
+    }
 
     getTransactions();
-    countAll();
+    countMonth();
     updateHeight();
     monthSelector();
 }
 
+function summary() {
+    const div =
+    `<div class="summary">
+        <div class="inner">
+            <div class="year-selector"><select id="summary-year"></select></div>
+            <div class="y-axis"></div>
+            <div class="x-axis"></div>
+        </div>
+    </div>`
+    const btnSummary = document.querySelector('#btn-summary');
+    const monthsDOM = Array.from(document.querySelectorAll('#month-selector option'));
+    const yearsDOM = Array.from(document.querySelectorAll('#year-selector option'));
+    const monthsNames = monthsDOM.map(el => el.innerText);
+    const yearsNames = yearsDOM.map(el => el.innerText);
+    let monthsSummary = {};
+    yearsNames.map(year => {
+        monthsNames.map(month => {
+            let balanceSum = 0;
+            const transaction = JSON.parse(localStorage.getItem(`expenseTracker${month}${year}`));
+            if(transaction && transaction.length > 0) {
+                if(!monthsSummary[`${year}`]) monthsSummary[`${year}`] = {};
+                transaction.map(el => {
+                    let price = Number(el.price);
+                    balanceSum += price
+                    monthsSummary[`${year}`][`${month}`] = balanceSum;
+                });
+            }
+        })
+    })
+    btnSummary.addEventListener('click', generateSummary);
+    function generateSummary() {
+        document.body.insertAdjacentHTML('beforeend',div);
+        const xAxis = document.querySelector('.x-axis');
+        const yearSelector = document.querySelector('#summary-year');
+        monthsNames.map(month => {
+            xAxis.insertAdjacentHTML('beforeend', `<span class="month">${month}</span>`);
+        })
+        yearsNames.map(year => {
+            yearSelector.insertAdjacentHTML('beforeend',`<option value="${year}">${year}</option>`);
+        })
+    }
+
+}
 
 expenseTracker('wrapper');
+summary();
