@@ -200,13 +200,12 @@ function expenseTracker (classWrapper) {
     updateHeight();
     monthSelector();
 }
-
+let monthsSummary = {};
 function summary() {
     const div =
     `<div class="summary">
         <div class="inner">
             <div class="year-selector"><select id="summary-year"></select></div>
-            <div class="y-axis"></div>
             <div class="x-axis"></div>
         </div>
     </div>`
@@ -215,7 +214,7 @@ function summary() {
     const yearsDOM = Array.from(document.querySelectorAll('#year-selector option'));
     const monthsNames = monthsDOM.map(el => el.innerText);
     const yearsNames = yearsDOM.map(el => el.innerText);
-    let monthsSummary = {};
+
     yearsNames.map(year => {
         monthsNames.map(month => {
             let balanceSum = 0;
@@ -233,16 +232,20 @@ function summary() {
     btnSummary.addEventListener('click', generateSummary);
     function generateSummary() {
         document.body.insertAdjacentHTML('beforeend',div);
+        const summaryBg = document.querySelector('.summary');
+        summaryBg.addEventListener('click',(e)=>{
+            if(e.target.classList.contains('summary'))
+            e.target.remove();
+        })
         const xAxis = document.querySelector('.x-axis');
         const yearSelector = document.querySelector('#summary-year');
         monthsNames.map(month => {
-            xAxis.insertAdjacentHTML('beforeend', `<span class="month">${month}</span>`);
+            xAxis.insertAdjacentHTML('beforeend', `<span class="month">${month.slice(0,3)}</span>`);
         })
         yearsNames.map(year => {
             yearSelector.insertAdjacentHTML('beforeend',`<option value="${year}">${year}</option>`);
         })
     }
-
 }
 
 expenseTracker('wrapper');
