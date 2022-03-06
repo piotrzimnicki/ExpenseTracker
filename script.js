@@ -233,7 +233,6 @@ function summary() {
                         let price = Number(el.price);
                         balanceSum += price
                         monthsSummary[`${year}`][`${month}`] = balanceSum;
-                        console.log({balanceSum});
                     });
                 }
             })
@@ -263,10 +262,9 @@ function summary() {
             const chartArr = Array.from(xAxis.querySelectorAll('.single-chart'));
             if(chartArr) chartArr.map(el => {if(el) el.remove()});
             summaryMonthsArr.map( el => {
-                const currentScale = maxYearVal ? maxYearVal[currentlySelectedYear].scale : 0;
-                const currentExpenseValue = monthsSummary != undefined ? monthsSummary[currentlySelectedYear][el.dataset.month]: 0;
+                const currentScale = maxYearVal[currentlySelectedYear] ? maxYearVal[currentlySelectedYear].scale : null;
+                const currentExpenseValue = monthsSummary[currentlySelectedYear] ? monthsSummary[currentlySelectedYear][el.dataset.month]: null;
                 const currentHeight = Number((Number(currentExpenseValue) / Number(currentScale)).toFixed(0));
-                console.log(currentHeight);
                 if(currentExpenseValue)
                 el.insertAdjacentHTML('beforeend', `<span
                 style="height:${Math.abs(currentHeight) > maxChartHeightPx ? maxChartHeightPx + 'px' : Math.abs(currentHeight) + 'px'};${currentHeight > 0 ? "bottom: 52px;background-color:#05b305" : "top: 52px; background-color:#a80000"}"
@@ -291,18 +289,11 @@ function summary() {
     function getMaxValue() {
         yearsNames.map(year => {
             const obj = monthsSummary[year];
-            if(obj) {
-                const arr = Object.values(obj);
-                const max = Math.max(...arr.map(el => Math.abs(el)));
-                console.log(max);
-            }
             maxYearVal[year] = obj ? {
                 max: Number((Math.max(...(Object.values(obj)).map(el => Math.abs(el)))).toFixed(3)),
                 scale: Number((Number((Math.max(...(Object.values(obj)).map(el => Math.abs(el))))/maxChartHeightPx)).toFixed(3))
             } : {max:0,scale:0};
         });
-        console.log(maxYearVal);
-        console.log(monthsSummary);
     }
 }
 
