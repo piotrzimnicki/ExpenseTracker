@@ -36,6 +36,11 @@ function expenseTracker (classWrapper) {
         localStorage.setItem('selected', JSON.stringify(selected));
         function addEvent(selector,array,monthOrYear) {
             selector.addEventListener('change', (e) => {
+                const optionArr = Array.from(selector.children)
+                optionArr.map(el => {
+                    el.removeAttribute('selected');
+                    if(selector.value == el.value) el.setAttribute('selected','selected');
+                });
                 localShort = `expenseTracker${selected.month}${selected.year}`;
                 selected[`${monthOrYear}`] = array[e.target.selectedIndex];
                 historyList.closest('.history').classList.add('fade-in');
@@ -200,8 +205,10 @@ function expenseTracker (classWrapper) {
     updateHeight();
     monthSelector();
 }
-let monthsSummary = {};
 function summary() {
+    let monthsSummary = {};
+    const maxYearVal = {};
+    const maxChartHeightPx = 300;
     const div =
     `<div class="summary">
         <div class="inner">
@@ -214,23 +221,28 @@ function summary() {
     const yearsDOM = Array.from(document.querySelectorAll('#year-selector option'));
     const monthsNames = monthsDOM.map(el => el.innerText);
     const yearsNames = yearsDOM.map(el => el.innerText);
-
-    yearsNames.map(year => {
-        monthsNames.map(month => {
-            let balanceSum = 0;
-            const transaction = JSON.parse(localStorage.getItem(`expenseTracker${month}${year}`));
-            if(transaction && transaction.length > 0) {
-                if(!monthsSummary[`${year}`]) monthsSummary[`${year}`] = {};
-                transaction.map(el => {
-                    let price = Number(el.price);
-                    balanceSum += price
-                    monthsSummary[`${year}`][`${month}`] = balanceSum;
-                });
-            }
+    function getSummary () {
+        monthsSummary = {};
+        yearsNames.map(year => {
+            monthsNames.map(month => {
+                let balanceSum = 0;
+                const transaction = JSON.parse(localStorage.getItem(`expenseTracker${month}${year}`));
+                if(transaction && transaction.length > 0) {
+                    if(!monthsSummary[`${year}`]) monthsSummary[`${year}`] = {};
+                    transaction.map(el => {
+                        let price = Number(el.price);
+                        balanceSum += price
+                        monthsSummary[`${year}`][`${month}`] = balanceSum;
+                        console.log({balanceSum});
+                    });
+                }
+            })
         })
-    })
+    }
     btnSummary.addEventListener('click', generateSummary);
     function generateSummary() {
+        getSummary ();
+        getMaxValue();
         document.body.insertAdjacentHTML('beforeend',div);
         const summaryBg = document.querySelector('.summary');
         summaryBg.addEventListener('click',(e)=>{
@@ -239,12 +251,58 @@ function summary() {
         })
         const xAxis = document.querySelector('.x-axis');
         const yearSelector = document.querySelector('#summary-year');
+        const currentSummaryYear = JSON.parse(localStorage.getItem('selected')).year;
         monthsNames.map(month => {
-            xAxis.insertAdjacentHTML('beforeend', `<span class="month">${month.slice(0,3)}</span>`);
+            xAxis.insertAdjacentHTML('beforeend', `<span data-month="${month}" class="month">${month.slice(0,3)}</span>`);
         })
         yearsNames.map(year => {
-            yearSelector.insertAdjacentHTML('beforeend',`<option value="${year}">${year}</option>`);
+            yearSelector.insertAdjacentHTML('beforeend',`<option ${year == currentSummaryYear ? "selected='selected'": ""} value="${year}">${year}</option>`);
         })
+        function generateChartOnLoad(currentlySelectedYear) {
+            const summaryMonthsArr = Array.from(xAxis.children);
+            const chartArr = Array.from(xAxis.querySelectorAll('.single-chart'));
+            if(chartArr) chartArr.map(el => {if(el) el.remove()});
+            summaryMonthsArr.map( el => {
+                const currentScale = maxYearVal ? maxYearVal[currentlySelectedYear].scale : 0;
+                const currentExpenseValue = monthsSummary != undefined ? monthsSummary[currentlySelectedYear][el.dataset.month]: 0;
+                const currentHeight = Number((Number(currentExpenseValue) / Number(currentScale)).toFixed(0));
+                console.log(currentHeight);
+                if(currentExpenseValue)
+                el.insertAdjacentHTML('beforeend', `<span
+                style="height:${Math.abs(currentHeight) > maxChartHeightPx ? maxChartHeightPx + 'px' : Math.abs(currentHeight) + 'px'};${currentHeight > 0 ? "bottom: 52px;background-color:#05b305" : "top: 52px; background-color:#a80000"}"
+                class="single-chart"><span
+                style="${currentHeight > 0 ? "top: -30px" : "bottom: -30px"}"
+                class="chart-text">${currentExpenseValue + ' zł'}</span></span>`);
+            })
+        }
+        generateChartOnLoad(currentSummaryYear);
+        yearSelector.addEventListener('change', generateChart);
+        function generateChart(e) {
+                const summaryOptionsArr = Array.from(yearSelector.children);
+                summaryOptionsArr.map(el => {
+                    el.removeAttribute('selected');
+                    if(yearSelector.value == el.value) el.setAttribute('selected','selected');
+                });
+                const selectedYear = e.target.value;
+                generateChartOnLoad(selectedYear);
+        }
+
+    }
+    function getMaxValue() {
+        yearsNames.map(year => {
+            const obj = monthsSummary[year];
+            if(obj) {
+                const arr = Object.values(obj);
+                const max = Math.max(...arr.map(el => Math.abs(el)));
+                console.log(max);
+            }
+            maxYearVal[year] = obj ? {
+                max: Number((Math.max(...(Object.values(obj)).map(el => Math.abs(el)))).toFixed(3)),
+                scale: Number((Number((Math.max(...(Object.values(obj)).map(el => Math.abs(el))))/maxChartHeightPx)).toFixed(3))
+            } : {max:0,scale:0};
+        });
+        console.log(maxYearVal);
+        console.log(monthsSummary);
     }
 }
 

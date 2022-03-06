@@ -288,6 +288,7 @@ h3.inner-title::after {
 }
 .summary .inner .year-selector {
     position: absolute;
+    z-index: 10;
     left: 10px;
     top: 10px;
 }
@@ -296,9 +297,11 @@ h3.inner-title::after {
     justify-content: center;
     align-items: center;
     height: 100%;
+    position: relative;
+    z-index: 9;
 }
-.summary .inner .x-axis span {
-    width: 50px;
+.summary .inner .x-axis > span {
+    width: 70px;
     display: flex;
     justify-content: center;
     padding: 20px 0;
@@ -307,7 +310,28 @@ h3.inner-title::after {
     color: #fff;
     font-weight: bold;
 }
-.summary .inner .x-axis span::before{
+.summary .inner .x-axis .single-chart {
+    position: absolute;
+    width: 20px;
+    height: 0;
+    z-index: -1;
+    display: flex;
+    background-color: #fff;
+    color: black;
+    font-size: 20px;
+    justify-content: center;
+    transition: .3s height;
+}
+.summary .inner .x-axis .single-chart .chart-text {
+    position: absolute;
+    /*bottom: -30px;*/
+    /*top: 30px;*/
+    width: 150px;
+    left: 50%;
+    text-align: center;
+    transform: translateX(-50%);
+}
+/* .summary .inner .x-axis > span::before{
     content: '';
     display: block;
     width: 1px;
@@ -317,7 +341,7 @@ h3.inner-title::after {
     top: 0;
     bottom: 0;
     z-index: -1;
-}
+} */
 @keyframes fadeOut {
     from {opacity: 1;}
     to {opacity: 0;}
