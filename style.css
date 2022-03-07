@@ -1,3 +1,7 @@
+:root {
+    --dark-main: #0f2e50;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -7,6 +11,14 @@
 html {
     font-size: 10px;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
+    color: #fff;
+}
+body{
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--dark-main);
 }
 
 h1 {
@@ -41,11 +53,11 @@ h3.inner-title::after {
 }
 
 .wrapper {
-    max-width: 800px;
+    min-width: 800px;
     margin: 20px auto;
     padding: 20px;
     border: 1px solid #888888;
-    box-shadow: 0px 20px 20px #d3d3d3;
+    box-shadow: 0px 10px 20px #000;
 }
 .wrapper h1 {
     text-align: center;
@@ -82,11 +94,12 @@ h3.inner-title::after {
 .selectors h2 {
     margin-right: 2rem;
 }
-.selectors select {
+select.selector {
     padding: 1rem 2rem;
-    background: none;
-    border: 1px solid #000;
+    background-color: var(--dark-main);
+    border: 1px solid rgb(255, 255, 255);
     font-size: 2rem;
+    color: inherit;
 }
 .selectors .year,
 .selectors .month {
@@ -156,6 +169,7 @@ h3.inner-title::after {
     position: relative;
     overflow: hidden;
     cursor: pointer;
+    color: #000;
 }
 
 .history .single::before {
@@ -229,6 +243,7 @@ h3.inner-title::after {
 
 .btn-submit {
     padding: 1em 2em;
+    margin-top: 1rem;
     background-color: rgb(0, 97, 207);
     color: #fff;
     border: none;
@@ -281,9 +296,11 @@ h3.inner-title::after {
     justify-content: center;
 }
 .summary .inner {
-    width: 800px;
-    height: 800px;
-    background-color: green;
+    width: 80vw;
+    height: 80vh;
+    max-width: 1000px;
+    max-height: 780px;
+    background-color: var(--dark-main);
     position: relative;
 }
 .summary .inner .year-selector {
@@ -304,44 +321,32 @@ h3.inner-title::after {
     width: 70px;
     display: flex;
     justify-content: center;
-    padding: 20px 0;
+    padding: 2rem 0;
     position: relative;
-    background-color: #000;
     color: #fff;
     font-weight: bold;
+    font-size: 1.4rem;
 }
 .summary .inner .x-axis .single-chart {
     position: absolute;
-    width: 20px;
+    width: 3rem;
     height: 0;
     z-index: -1;
     display: flex;
     background-color: #fff;
     color: black;
-    font-size: 20px;
+    font-size: 1.4rem;
     justify-content: center;
-    transition: .3s height;
+    transition: .5s height;
+    cursor: pointer;
 }
 .summary .inner .x-axis .single-chart .chart-text {
     position: absolute;
-    /*bottom: -30px;*/
-    /*top: 30px;*/
     width: 150px;
     left: 50%;
     text-align: center;
     transform: translateX(-50%);
 }
-/* .summary .inner .x-axis > span::before{
-    content: '';
-    display: block;
-    width: 1px;
-    height: auto;
-    background-color: #fff;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    z-index: -1;
-} */
 @keyframes fadeOut {
     from {opacity: 1;}
     to {opacity: 0;}
