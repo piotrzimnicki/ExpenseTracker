@@ -36,10 +36,11 @@ function expenseTracker (classWrapper) {
         localStorage.setItem('selected', JSON.stringify(selected));
         function addEvent(selector,array,monthOrYear) {
             selector.addEventListener('change', (e) => {
-                const optionArr = Array.from(selector.children)
+                const optionArr = Array.from(selector.children);
+                const selectorVal = selector.value;
                 optionArr.map(el => {
                     el.removeAttribute('selected');
-                    if(selector.value == el.value) el.setAttribute('selected','selected');
+                    if(selectorVal == el.value) el.setAttribute('selected','selected');
                 });
                 localShort = `expenseTracker${selected.month}${selected.year}`;
                 selected[`${monthOrYear}`] = array[e.target.selectedIndex];
@@ -273,38 +274,43 @@ function summary() {
             summaryMonthsArr.map( el => {
                 const currentScale = maxYearVal[currentlySelectedYear] ? maxYearVal[currentlySelectedYear].scale : null;
                 const currentExpenseValue = monthsSummary[currentlySelectedYear] ? monthsSummary[currentlySelectedYear][el.dataset.month]: null;
-                const currentHeight = Number((Number(currentExpenseValue) / Number(currentScale)).toFixed(1));
+                const currentHeight = Number((Number(currentExpenseValue) / Number(currentScale)));
                 if(currentExpenseValue){
                     const htmlEl = `<span
-                    style="${currentHeight > 0 ? "bottom: 5.2rem;background-color:#05b305" : "top: 5.2rem; background-color:#d30000"}"
-                    class="single-chart"><span
-                    style="${currentHeight > 0 ? "top: -3rem" : "bottom: -3rem"}"
+                    style="${currentExpenseValue > 0 ? "bottom: 5.2rem;background-color:#05b305" : "top: 5.2rem; background-color:#d30000"}"
+                    class="single-chart">
+                    <span style="${currentExpenseValue > 0 ? "top: -8rem" : "bottom: -8rem"}" class="modal-info hidden">Click on chart to show this month</span>
+                    <span
+                    style="${currentExpenseValue > 0 ? "top: -3rem" : "bottom: -3rem"}"
                     class="chart-text"></span></span>`;
                     el.insertAdjacentHTML('beforeend', htmlEl);
                     setTimeout(()=>{
-                        el.querySelector('.single-chart').style.height =  Math.abs(currentHeight) < 2 ? Math.abs(currentHeight) + 1.5 + 'vh' : Math.abs(currentHeight) + 'vh';
+                        el.querySelector('.single-chart').style.height =  Math.abs(currentHeight) < 2 ? Math.abs(currentHeight.toFixed(2)) + 1.5 + 'vh' : Math.abs(currentHeight.toFixed(2)) + 'vh';
                     },100)
                     setTimeout(()=> {
                         const chartText = el.querySelector('.single-chart .chart-text');
                         if(chartText) {
-                            chartText.innerText = currentExpenseValue + ' zł';
+                            chartText.textContent = currentExpenseValue + String.fromCharCode(160)+'zł';
                             chartText.classList.add('fade-in');
                             chartText.style.color = currentHeight > 0 ? "#05b305" : "#d30000";
                         }
                     },200)
-                    el.addEventListener('click', () => {
-                        const month = el.dataset.month;
-                        const year = document.querySelector('#summary-year') ? document.querySelector('#summary-year').value : null;
-                        const summaryBg = document.querySelector('.summary');
-                        const yearSelector = document.querySelector('#year-selector');
-                        const monthSelector = document.querySelector('#month-selector');
-                        yearSelector.value = year;
-                        monthSelector.value = month;
-                        setTimeout(()=> {
-                            yearSelector.dispatchEvent(new Event('change', { 'bubbles': true }))
-                            monthSelector.dispatchEvent(new Event('change', { 'bubbles': true }))
-                            if(summaryBg) summaryBg.remove();
-                        },10)
+
+                    el.addEventListener('click', (e) => {
+                        if(e.target.classList.contains('single-chart') || e.target.classList.contains('chart-text') ) {
+                            const month = el.dataset.month;
+                            const year = document.querySelector('#summary-year') ? document.querySelector('#summary-year').value : null;
+                            const summaryBg = document.querySelector('.summary');
+                            const yearSelector = document.querySelector('#year-selector');
+                            const monthSelector = document.querySelector('#month-selector');
+                            yearSelector.value = year;
+                            monthSelector.value = month;
+                            setTimeout(()=> {
+                                yearSelector.dispatchEvent(new Event('change', { 'bubbles': true }))
+                                monthSelector.dispatchEvent(new Event('change', { 'bubbles': true }))
+                                if(summaryBg) summaryBg.remove();
+                            },100)
+                        }
                     })
                 }
             })
@@ -328,7 +334,7 @@ function summary() {
             maxYearVal[year] = obj ? {
                 max: Number((Math.max(...(Object.values(obj)).map(el => Math.abs(el)))).toFixed(3)),
                 scale: Number((Number((Math.max(...(Object.values(obj)).map(el => Math.abs(el))))/maxChartHeight)).toFixed(3))
-            } : {max:0,scale:0};
+            } : null;
         });
     }
 }
