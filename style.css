@@ -312,11 +312,28 @@ select.selector {
     background-color: var(--dark-main);
     position: relative;
 }
-.summary .inner .year-selector {
+.summary .inner .summary-top-bar {
     position: absolute;
-    z-index: 10;
     left: 10px;
     top: 10px;
+    z-index: 20;
+    border-bottom: 2px solid #fff;
+}
+.summary .inner .summary-top-bar .summary-balance-wrapper {
+    display: inline-block;
+}
+.summary .inner .summary-top-bar .summary-income {
+    color: #05b305;
+}
+.summary .inner .summary-top-bar .summary-expense {
+    color: #d30000;
+}
+.summary .inner .summary-top-bar span[id^='summary'] {
+    font-size: 1.6rem;
+    padding: 5px 10px;
+}
+.summary .inner .summary-top-bar span[id^='summary'] span {
+    font-weight: 600;
 }
 .summary .inner .x-axis {
     display: flex;
@@ -324,7 +341,8 @@ select.selector {
     align-items: center;
     height: 100%;
     position: relative;
-    z-index: 9;
+    z-index: 10;
+    top: 40px;
 }
 .summary .inner .x-axis > span {
     width: 70px;
@@ -340,7 +358,6 @@ select.selector {
     position: absolute;
     width: 3rem;
     height: 0;
-    z-index: -1;
     display: flex;
     background-color: #fff;
     color: black;
@@ -350,8 +367,10 @@ select.selector {
     cursor: pointer;
 }
 .summary .inner .x-axis .single-chart:hover .modal-info {
+    visibility: visible;
     opacity: 1;
     transition: .3s opacity;
+    background-color: #000;
 }
 .summary .inner .x-axis .single-chart .chart-text {
     position: absolute;
@@ -361,6 +380,7 @@ select.selector {
 }
 .modal-info.hidden {
     opacity: 0;
+    visibility: hidden;
 }
 .modal-info {
     transition: .3s opacity;
@@ -373,6 +393,7 @@ select.selector {
     font-weight: 400;
     border: 1px solid #fff;
     text-align: center;
+    z-index: 20;
 }
 @keyframes fadeOut {
     from {opacity: 1;}
