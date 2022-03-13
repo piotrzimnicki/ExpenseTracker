@@ -123,6 +123,7 @@ function expenseTracker (classWrapper) {
         }
     }
     function addTransaction(e) {
+        localShort = `expenseTracker${selected.month}${selected.year}`;
         const inputs = e.target.closest('.add-transaction') ? Array.from(e.target.closest('.add-transaction').querySelectorAll('input')): null;
         if(!inputs) return;
         const values = Array.from(inputs).map(el => el.value);
