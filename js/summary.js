@@ -3,7 +3,7 @@ function summary() {
     const maxYearVal = {};
     const maxChartHeight = 20;
     const summaryDiv =
-    `<div class="summary fade-in">
+    `<div id="summary" class="summary fade-in">
         <div class="inner">
             <div class="summary-top-bar">
                 <select id="summary-year" class="selector"></select>
@@ -41,7 +41,8 @@ function summary() {
     // BUTTON SUMMARY ACTION
     btnSummary.addEventListener('click', generateSummary);
     function generateSummary() {
-
+        const isSummary = document.querySelector('#summary');
+        if(isSummary) return;
         if(window.innerHeight > window.innerWidth) {
             alert('Please use horizontal view');
             return;
