@@ -112,9 +112,12 @@ function expenseTracker (classWrapper) {
             historyList.innerText = '';
             transactions.map(el => {
                 const div = `<div id="${el.id}" class="single ${Number(el.price > 0) ? "income" : "expense"}">
-                <p><span id="name" class="name">${el.name}</span><span id="price" class="price">${el.price}</span></p>
+                <p><span id="name" class="name"></span><span id="price" class="price">${el.price}</span></p>
                 </div>`
                 historyList.insertAdjacentHTML('beforeend',div);
+                const divById = document.getElementById(el.id);
+                const span = divById ? divById.querySelector('span') : null;
+                if(span) span.innerText = el.name;
             });
             countMonth();
         } else {
