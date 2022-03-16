@@ -63,6 +63,7 @@ h3.inner-title::after {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-bottom: 20px;
 }
 .utils .drop,
 .utils .btn-summary {
@@ -88,6 +89,18 @@ h3.inner-title::after {
     background-color: #014797;
 }
 
+.utils .currency-wrapper {
+    font-size: 1.6rem;
+    border: 1px solid;
+    padding: 10px;
+}
+.utils .currency-wrapper select {
+    background-color: #fff;
+    border: none;
+    padding: 5px;
+    font-size: 1.5rem;
+    text-align: center;
+}
 .selectors h2 {
     margin-right: 2rem;
 }

@@ -12,6 +12,11 @@
     <div class="wrapper">
         <div class="utils">
             <button id="drop" class="drop">DELETE ALL</button>
+            <label class="currency-wrapper" for="currency">
+                Select currency:
+                <select name="currency" id="currency-selector">
+                </select>
+            </label>
             <button id="btn-summary" class="btn-summary">Summary</button>
         </div>
         <h1>Expense Tracker</h1>
@@ -29,16 +34,16 @@
         </div>
         <div class="balance">
             <h2>Your balance</h2>
-            <p id="balance">$150.00</p>
+            <p id="balance"></p>
         </div>
         <div class="main-info">
             <div class="income">
                 <h3>income</h3>
-                <p id="income">$300.00</p>
+                <p id="income"></p>
             </div>
             <div class="expense">
                 <h3>expense</h3>
-                <p id="expense">$150.00</p>
+                <p id="expense"></p>
             </div>
         </div>
         <div class="history">
@@ -59,7 +64,7 @@
                 </label>
                 <label>
                     <p>Cash amount</p>
-                    <input type="number" name="amount" placeholder="Enter amount...">
+                    <input type="number" name="amount" placeholder="Enter amount (e.g. 10 or -10)">
                 </label>
             </div>
             <button class="btn btn-submit" id="submit">Save transaction</button>

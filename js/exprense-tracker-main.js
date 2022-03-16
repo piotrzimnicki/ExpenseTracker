@@ -7,11 +7,19 @@ function expenseTracker (classWrapper) {
     const expenseInfo = wrapper.querySelector('#expense');
     const btnSubmit = wrapper.querySelector('#submit');
     const message = wrapper.querySelector('.message');
-    const yearList = [2024,2023,2022,2021,2020];
+    const currentYear = new Date().getFullYear();
+    const yearList = [currentYear];
+    for(let i = 1; i <=2; i++) {
+        yearList.push(currentYear - i);
+        yearList.unshift(currentYear + i);
+    }
     const monthList = ['January','February','March','April','May','June','July','August','September','November','December'];
+    const currencyList = ['zł','PLN','$', '€'];
+    const currencyOnLeft = ['$', '€'];
     let selected = {
         month: localStorage.getItem('selected') ? (JSON.parse(localStorage.getItem('selected'))).month : null,
         year: localStorage.getItem('selected') ? (JSON.parse(localStorage.getItem('selected'))).year : null,
+        currency: localStorage.getItem('selected') ? (JSON.parse(localStorage.getItem('selected'))).currency : null,
     }
     let localShort = `expenseTracker${selected.month}${selected.year}`;
     btnSubmit.addEventListener('click', addTransaction);
@@ -24,17 +32,20 @@ function expenseTracker (classWrapper) {
         window.crypto.getRandomValues(a);
         return (performance.now().toString(36)+Array.from(a).map(A => A.toString(36)).join("")).replace(/\./g,"");
     };
-    function monthSelector() {
+    function selectors() {
         const selectMonth = wrapper.querySelector('#month-selector');
         const selectYear = wrapper.querySelector('#year-selector');
+        const selectCurrency = wrapper.querySelector('#currency-selector');
         const lastMonth = localStorage.getItem('selected') ? (JSON.parse(localStorage.getItem('selected'))).month: monthList[0];
-        const lastYear = localStorage.getItem('selected') ? (JSON.parse(localStorage.getItem('selected'))).year : yearList[0];
+        const lastYear = localStorage.getItem('selected') ? (JSON.parse(localStorage.getItem('selected'))).year : currentYear;
+        const lastCurrency = localStorage.getItem('selected') ? (JSON.parse(localStorage.getItem('selected'))).currency : currencyList[0];
         selected = {
             month: lastMonth,
-            year: lastYear
+            year: lastYear,
+            currency: lastCurrency
         }
         localStorage.setItem('selected', JSON.stringify(selected));
-        function addEvent(selector,array,monthOrYear) {
+        function addEvent(selector,array,monthYearCurrency) {
             selector.addEventListener('change', (e) => {
                 const optionArr = Array.from(selector.children);
                 const selectorVal = selector.value;
@@ -43,10 +54,10 @@ function expenseTracker (classWrapper) {
                     if(selectorVal == el.value) el.setAttribute('selected','selected');
                 });
                 localShort = `expenseTracker${selected.month}${selected.year}`;
-                selected[`${monthOrYear}`] = array[e.target.selectedIndex];
+                selected[`${monthYearCurrency}`] = array[e.target.selectedIndex];
                 historyList.closest('.history').classList.add('fade-in');
                 localStorage.setItem('selected', JSON.stringify(selected));
-                selected[`${monthOrYear}`] = (JSON.parse(localStorage.getItem('selected')))[`${monthOrYear}`];
+                selected[`${monthYearCurrency}`] = (JSON.parse(localStorage.getItem('selected')))[`${monthYearCurrency}`];
                 getTransactions();
                 updateHeight(e);
                 setTimeout(()=> {
@@ -56,6 +67,7 @@ function expenseTracker (classWrapper) {
         }
         addEvent(selectMonth,monthList,'month');
         addEvent(selectYear,yearList,'year');
+        addEvent(selectCurrency,currencyList,'currency');
         function printOptions(arr,last,wrapper) {
             arr.map(el => {
                 let option = `<option ${el==last?'selected="selected"':""} value="${el}">${el}</option>`;
@@ -64,6 +76,7 @@ function expenseTracker (classWrapper) {
         }
         printOptions(monthList,lastMonth,selectMonth);
         printOptions(yearList,lastYear,selectYear);
+        printOptions(currencyList,lastCurrency,selectCurrency);
     }
     function updateHeight(e) {
         if(e) {
@@ -108,11 +121,16 @@ function expenseTracker (classWrapper) {
     function getTransactions() {
         localShort = `expenseTracker${selected.month}${selected.year}`;
         const transactions = JSON.parse(localStorage.getItem(localShort));
+        const currentCurrency = (JSON.parse(localStorage.getItem('selected'))).currency;
+        const isLeft = currencyOnLeft.includes(currentCurrency) ? true : false;
         if(transactions) {
             historyList.innerText = '';
             transactions.map(el => {
                 const div = `<div id="${el.id}" class="single ${Number(el.price > 0) ? "income" : "expense"}">
-                <p><span id="name" class="name"></span><span id="price" class="price">${el.price}</span></p>
+                <p>
+                    <span id="name" class="name"></span>
+                    <span id="price" class="price">${isLeft ? currentCurrency + el.price : el.price + ' ' + currentCurrency }</span>
+                </p>
                 </div>`
                 historyList.insertAdjacentHTML('beforeend',div);
                 const divById = document.getElementById(el.id);
@@ -173,6 +191,8 @@ function expenseTracker (classWrapper) {
             let incomeSum = 0;
             let expenseSum = 0;
             const transactions = JSON.parse(localStorage.getItem(localShort));
+            const currentCurrency = (JSON.parse(localStorage.getItem('selected'))).currency;
+            const isLeft = currencyOnLeft.includes(currentCurrency) ? true : false;
             if(transactions && transactions.length > 0) {
                 transactions.map(el => {
                     let price = Number(el.price);
@@ -186,9 +206,15 @@ function expenseTracker (classWrapper) {
             balance.removeAttribute('class');
             if(balanceSum < 0) balance.classList.add('negative');
             if(balanceSum > 0) balance.classList.add('positive');
-            balance.innerText = balanceSum.toFixed(2) + ' zł';
-            incomeInfo.innerText = incomeSum.toFixed(2) + ' zł';
-            expenseInfo.innerText = expenseSum.toFixed(2) + ' zł';
+            if(isLeft) {
+                balance.innerText = currentCurrency + balanceSum.toFixed(2);
+                incomeInfo.innerText = currentCurrency + incomeSum.toFixed(2);
+                expenseInfo.innerText = currentCurrency + expenseSum.toFixed(2);
+            } else {
+                balance.innerText = balanceSum.toFixed(2) + ' ' + currentCurrency;
+                incomeInfo.innerText = incomeSum.toFixed(2) + ' ' + currentCurrency;
+                expenseInfo.innerText = expenseSum.toFixed(2) + ' ' + currentCurrency;
+            }
     };
     drop.addEventListener('click',dropList);
     function dropList() {
@@ -205,11 +231,10 @@ function expenseTracker (classWrapper) {
             updateHeight();
         }
     }
-
+    selectors();
     getTransactions();
     countMonth();
     updateHeight();
-    monthSelector();
 }
 
 expenseTracker('wrapper');

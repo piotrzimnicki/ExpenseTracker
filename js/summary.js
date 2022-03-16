@@ -1,5 +1,7 @@
 function summary() {
     let monthsSummary = {};
+    let currentCurrency = (JSON.parse(localStorage.getItem('selected'))).currency;
+    const currencyOnLeft = ['$', '€'];
     const maxYearVal = {};
     const maxChartHeight = 20;
     const summaryDiv =
@@ -41,6 +43,8 @@ function summary() {
     // BUTTON SUMMARY ACTION
     btnSummary.addEventListener('click', generateSummary);
     function generateSummary() {
+        currentCurrency = (JSON.parse(localStorage.getItem('selected'))).currency;
+        const isLeft = currencyOnLeft.includes(currentCurrency) ? true : false;
         const isSummary = document.querySelector('#summary');
         if(isSummary) return;
         if(window.innerHeight > window.innerWidth) {
@@ -60,9 +64,15 @@ function summary() {
             const incomeSpan = document.querySelector('#summary-income > span');
             const expenseSpan = document.querySelector('#summary-expense > span');
             const balanceSpan = document.querySelector('#summary-balance > span');
-            if (incomeSpan) incomeSpan.textContent = income + ' zł';
-            if (expenseSpan) expenseSpan.textContent = expense + ' zł';
-            if (balanceSpan) balanceSpan.textContent = balance + ' zł';
+            if(isLeft) {
+                if (incomeSpan) incomeSpan.textContent = currentCurrency + income;
+                if (expenseSpan) expenseSpan.textContent = currentCurrency + expense;
+                if (balanceSpan) balanceSpan.textContent = currentCurrency + balance;
+            } else {
+                if (incomeSpan) incomeSpan.textContent = income + ' ' + currentCurrency;
+                if (expenseSpan) expenseSpan.textContent = expense + ' ' + currentCurrency;
+                if (balanceSpan) balanceSpan.textContent = balance + ' ' + currentCurrency;
+            }
             setTimeout(() => {
                 summaryBalanceWrapper.classList.remove('fade-in');
             },300)
@@ -115,7 +125,11 @@ function summary() {
                     setTimeout(()=> {
                         const chartText = el.querySelector('.single-chart .chart-text');
                         if(chartText) {
-                            chartText.textContent = currentExpenseValue + String.fromCharCode(160)+'zł';
+                            if(isLeft) {
+                                chartText.textContent = currentCurrency + currentExpenseValue;
+                            } else {
+                                chartText.textContent = currentExpenseValue + String.fromCharCode(160) + currentCurrency;
+                            }
                             chartText.classList.add('fade-in');
                             chartText.style.color = currentHeight > 0 ? "#05b305" : "#d30000";
                         }
