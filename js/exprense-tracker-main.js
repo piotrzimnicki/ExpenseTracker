@@ -220,6 +220,8 @@ function expenseTracker (classWrapper) {
     function dropList() {
         const confirm = window.confirm('Are u sure to delete ALL data?');
         if(confirm) {
+            if(localStorage.getItem(`selected`))
+            localStorage.removeItem('selected');
             monthList.map(month => {
                 yearList.map(year => {
                     if(localStorage.getItem(`expenseTracker${month}${year}`))
