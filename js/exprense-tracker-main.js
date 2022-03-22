@@ -121,7 +121,7 @@ function expenseTracker (classWrapper) {
     function getTransactions() {
         localShort = `expenseTracker${selected.month}${selected.year}`;
         const transactions = JSON.parse(localStorage.getItem(localShort));
-        const currentCurrency = (JSON.parse(localStorage.getItem('selected'))).currency;
+        const currentCurrency = localStorage.getItem('selected') ? (JSON.parse(localStorage.getItem('selected'))).currency : document.querySelector('#currency-selector').value;
         const isLeft = currencyOnLeft.includes(currentCurrency) ? true : false;
         if(transactions) {
             historyList.innerText = '';
@@ -191,7 +191,7 @@ function expenseTracker (classWrapper) {
             let incomeSum = 0;
             let expenseSum = 0;
             const transactions = JSON.parse(localStorage.getItem(localShort));
-            const currentCurrency = (JSON.parse(localStorage.getItem('selected'))).currency;
+            const currentCurrency = localStorage.getItem('selected') ? (JSON.parse(localStorage.getItem('selected'))).currency : document.querySelector('#currency-selector').value;
             const isLeft = currencyOnLeft.includes(currentCurrency) ? true : false;
             if(transactions && transactions.length > 0) {
                 transactions.map(el => {
