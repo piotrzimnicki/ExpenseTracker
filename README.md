@@ -1,2 +1,3 @@
 # ExpenseTracker
-Nothing fancy, just another expense tracker for learing purpose.
+Slighlty expanded expense  tracker made with JavaScript.<br>
+You can test it at: https://piotrzimnicki.github.io/ExpenseTracker/
